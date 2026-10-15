@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:pixez/fluent/fluentui.dart';
 import 'package:pixez/main.dart';
 import 'package:pixez/src/generated/i18n/app_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -125,6 +126,7 @@ class TrayManagerHelper with WindowListener {
   /// 显示窗口并置顶
   Future<void> showWindow() async {
     try {
+      print('[Instrumentation][showWindow] 即将显示窗口: 内存 _effect = $currentWindowEffect, 上次 setEffect = $lastAppliedEffect');
       if (await windowManager.isMinimized()) {
         await windowManager.restore();
       }
@@ -132,6 +134,7 @@ class TrayManagerHelper with WindowListener {
         await windowManager.show();
       }
       await windowManager.focus();
+      print('[Instrumentation][showWindow] 显示窗口完成: 内存 _effect = $currentWindowEffect, 上次 setEffect = $lastAppliedEffect, isVisible = ${await windowManager.isVisible()}');
     } catch (e) {
       debugPrint('[TrayManager] showWindow error: $e');
     }
@@ -140,7 +143,9 @@ class TrayManagerHelper with WindowListener {
   /// 隐藏窗口
   Future<void> hideWindow() async {
     try {
+      print('[Instrumentation][hideWindow] 即将隐藏窗口: 内存 _effect = $currentWindowEffect, 上次 setEffect = $lastAppliedEffect');
       await windowManager.hide();
+      print('[Instrumentation][hideWindow] 隐藏窗口完成: 内存 _effect = $currentWindowEffect, 上次 setEffect = $lastAppliedEffect, isVisible = ${await windowManager.isVisible()}');
     } catch (e) {
       debugPrint('[TrayManager] hideWindow error: $e');
     }

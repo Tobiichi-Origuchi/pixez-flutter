@@ -18,6 +18,8 @@ import 'package:pixez/win32_plugin.dart';
 import 'package:window_manager/window_manager.dart';
 
 WindowEffect? _effect = null;
+WindowEffect? lastAppliedEffect = null;
+WindowEffect? get currentWindowEffect => _effect;
 
 initFluent(List<String> args) async {
   if (!Constants.isFluent) return;
@@ -38,6 +40,9 @@ initFluent(List<String> args) async {
       }
 
       _effect = await getEffect();
+      print(
+        '[Instrumentation][initFluent] getEffect() 初始化赋值: _effect = $_effect',
+      );
       await windowManager.show();
       await windowManager.focus();
     },
@@ -105,8 +110,15 @@ Widget buildFluentUI(BuildContext context) {
             material_ui.ThemeMode.light => false,
           };
 
+          print(
+            '[Instrumentation][Rebuild] Observer 正在重建: 当前储存的 _effect = $_effect, isDark = $isDark, themeMode = ${userSetting.themeMode}',
+          );
+
           if (_effect != null && !Platform.isLinux) {
-            debugPrint("背景特效: $_effect; 暗色主题: $isDark;");
+            print(
+              '[Instrumentation][setEffect] 执行 Window.setEffect: effect = $_effect, dark = $isDark',
+            );
+            lastAppliedEffect = _effect;
             Window.setEffect(effect: _effect!, dark: isDark);
           }
           final focusTheme = FocusThemeData(
