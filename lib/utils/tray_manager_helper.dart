@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:pixez/fluent/fluentui.dart';
 import 'package:pixez/main.dart';
 import 'package:pixez/src/generated/i18n/app_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -126,6 +125,9 @@ class TrayManagerHelper with WindowListener {
   /// 显示窗口并置顶
   Future<void> showWindow() async {
     try {
+      if (Platform.isWindows) {
+        await windowManager.setSkipTaskbar(false);
+      }
       if (await windowManager.isMinimized()) {
         await windowManager.restore();
       }
@@ -133,9 +135,6 @@ class TrayManagerHelper with WindowListener {
         await windowManager.show();
       }
       await windowManager.focus();
-      if (Platform.isWindows) {
-        await reapplyWindowEffect();
-      }
     } catch (e) {
       debugPrint('[TrayManager] showWindow error: $e');
     }
@@ -144,7 +143,12 @@ class TrayManagerHelper with WindowListener {
   /// 隐藏窗口
   Future<void> hideWindow() async {
     try {
-      await windowManager.hide();
+      if (Platform.isWindows) {
+        await windowManager.setSkipTaskbar(true);
+        await windowManager.minimize();
+      } else {
+        await windowManager.hide();
+      }
     } catch (e) {
       debugPrint('[TrayManager] hideWindow error: $e');
     }
@@ -193,7 +197,7 @@ class TrayManagerHelper with WindowListener {
   @override
   void onWindowRestore() async {
     if (Platform.isWindows) {
-      await reapplyWindowEffect();
+      await windowManager.setSkipTaskbar(false);
     }
   }
 
