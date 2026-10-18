@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:pixez/fluent/fluentui.dart';
 import 'package:pixez/main.dart';
 import 'package:pixez/src/generated/i18n/app_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -132,6 +133,9 @@ class TrayManagerHelper with WindowListener {
         await windowManager.show();
       }
       await windowManager.focus();
+      if (Platform.isWindows) {
+        await reapplyWindowEffect();
+      }
     } catch (e) {
       debugPrint('[TrayManager] showWindow error: $e');
     }
@@ -183,6 +187,13 @@ class TrayManagerHelper with WindowListener {
       await hideWindow();
     } else {
       await exitApp();
+    }
+  }
+
+  @override
+  void onWindowRestore() async {
+    if (Platform.isWindows) {
+      await reapplyWindowEffect();
     }
   }
 

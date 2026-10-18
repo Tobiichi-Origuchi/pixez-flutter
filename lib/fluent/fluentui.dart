@@ -64,6 +64,27 @@ Future<WindowEffect> getEffect() async {
   }
 }
 
+/// 供窗口从隐藏恢复时重新应用背景特效
+Future<void> reapplyWindowEffect() async {
+  if (!Constants.isFluent || !Platform.isWindows) return;
+  _effect ??= await getEffect();
+  if (_effect != null && _effect != WindowEffect.disabled) {
+    final isDark = switch (userSetting.themeMode) {
+      material_ui.ThemeMode.dark => true,
+      material_ui.ThemeMode.system =>
+        WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+            Brightness.dark,
+      material_ui.ThemeMode.light => false,
+    };
+    try {
+      debugPrint('reapplyWindowEffect: effect=$_effect, dark=$isDark');
+      await Window.setEffect(effect: _effect!, dark: isDark);
+    } catch (e) {
+      debugPrint('reapplyWindowEffect error: $e');
+    }
+  }
+}
+
 Widget buildFluentUI(BuildContext context) {
   if (!Constants.isFluent) return Container();
 

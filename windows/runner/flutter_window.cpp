@@ -1,7 +1,5 @@
 #include "flutter_window.h"
 #include "plugins_manager.h"
-
-#include <dwmapi.h>
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
@@ -66,14 +64,6 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
   switch (message) {
     case WM_FONTCHANGE:
       flutter_controller_->engine()->ReloadSystemFonts();
-      break;
-    case WM_SHOWWINDOW:
-      if (wparam) {
-        MARGINS margins = {-1, -1, -1, -1};
-        ::DwmExtendFrameIntoClientArea(hwnd, &margins);
-        ::SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
-                       SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-      }
       break;
   }
 
