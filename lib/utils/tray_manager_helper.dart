@@ -125,9 +125,6 @@ class TrayManagerHelper with WindowListener {
   /// 显示窗口并置顶
   Future<void> showWindow() async {
     try {
-      if (Platform.isWindows) {
-        await windowManager.setSkipTaskbar(false);
-      }
       if (await windowManager.isMinimized()) {
         await windowManager.restore();
       }
@@ -143,12 +140,7 @@ class TrayManagerHelper with WindowListener {
   /// 隐藏窗口
   Future<void> hideWindow() async {
     try {
-      if (Platform.isWindows) {
-        await windowManager.setSkipTaskbar(true);
-        await windowManager.minimize();
-      } else {
-        await windowManager.hide();
-      }
+      await windowManager.hide();
     } catch (e) {
       debugPrint('[TrayManager] hideWindow error: $e');
     }
@@ -191,13 +183,6 @@ class TrayManagerHelper with WindowListener {
       await hideWindow();
     } else {
       await exitApp();
-    }
-  }
-
-  @override
-  void onWindowRestore() async {
-    if (Platform.isWindows) {
-      await windowManager.setSkipTaskbar(false);
     }
   }
 
